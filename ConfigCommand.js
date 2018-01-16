@@ -29,13 +29,13 @@ class ConfigCommand extends Command {
     if (!value) {
       if (options.reset) {
         this.config.reset(option);
-        Logger.info(`Reset ${option.cyan}`);
+        Logger.info(`Reset ${chalk.cyan(option)}`);
       } else {
         Logger.info(data[option]);
       }
     } else {
       this.config.set(option, value);
-      Logger.info(`${option.cyan} saved`);
+      Logger.info(`${chalk.cyan(option)} saved`);
     }
 
     this.config.save();
