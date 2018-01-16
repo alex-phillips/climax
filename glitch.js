@@ -21,6 +21,30 @@ defaultCommands = {
     file: './ConfigCommand'
   },
 },
+defaultGlobal =   {
+  options: {
+    h: {
+      group: 'Global Flags:'
+    },
+    v: {
+      group: 'Global Flags:',
+      alias: 'verbose',
+      demand: false,
+      desc: 'Output verbosity: 1 for normal (-v), 2 for more verbose (-vv), and 3 for debug (-vvv)',
+      type: 'count'
+    },
+    q: {
+      group: 'Global Flags:',
+      alias: 'quiet',
+      demand: false,
+      desc: 'Suppress all output',
+      type: 'boolean'
+    },
+    V: {
+      group: 'Global Flags:'
+    }
+  }
+},
 defaultConfig = {
   'cli.colors': {
     type: 'bool',
@@ -59,10 +83,10 @@ defaultConfig = {
 };
 
 class glitch {
-  constructor(commands, global, config) {
+  constructor(commands = {}, config = {}, global = {}) {
     this.commands = Object.assign(commands, defaultCommands);
-    this.global = global;
     this.config = Object.assign(config, defaultConfig);
+    this.global = Object.assign(global, defaultGlobal);
 
     this.banner = '';
     this.name = '';
