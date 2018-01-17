@@ -1,6 +1,6 @@
 {
   "name": "node-climax",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Super-easy command line app builder built on yargs",
   "main": "index.js",
   "dependencies": {

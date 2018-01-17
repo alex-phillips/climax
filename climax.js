@@ -86,8 +86,8 @@ let chalk = require('chalk'),
 
 class climax {
   constructor(name, banner = '') {
-    this.name = '';
-    this.banner = '';
+    this.name = name;
+    this.banner = banner;
   }
 
   init(commands = {}, config = {}, global = {}) {
