@@ -1,13 +1,8 @@
 {
-  "name": "glitch",
+  "name": "glitch-cli",
   "version": "1.0.0",
-  "description": "",
+  "description": "Super-easy command line app builder built on yargs",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "chalk": "^2.3.0",
     "elegant-spinner": "^1.0.1",
@@ -17,5 +12,25 @@
     "moment": "^2.20.1",
     "winston": "^2.4.0",
     "yargs": "^10.1.1"
-  }
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alex-phillips/glitch.git"
+  },
+  "keywords": [
+    "cli",
+    "yargs",
+    "command-line",
+    "framework"
+  ],
+  "author": "Alex Phillips <ahp118@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alex-phillips/glitch/issues"
+  },
+  "homepage": "https://github.com/alex-phillips/glitch#readme"
 }
