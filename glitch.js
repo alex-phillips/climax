@@ -187,7 +187,7 @@ ${chalk.magenta('Usage:')}
         'Options:': chalk.magenta('Options:'),
         'Global Flags:': chalk.magenta('Global Flags:'),
       })
-      .options(this.global.options)
+      .options(this.global)
       // .epilog(`Copyright ${new Date().getFullYear()}`)
       .strict()
       .fail((message) => {
