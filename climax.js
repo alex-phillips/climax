@@ -1,97 +1,99 @@
 'use strict';
 
 let chalk = require('chalk'),
-yargs = require('yargs'),
-Command = require('./Command'),
-Config = require('./Config'),
-Logger = require('./Logger'),
-defaultCommands = {
-  'config': {
-    usage: '[flags] [key] [value]',
-    desc: 'Read, write, and reset config values',
-    options: {
-      r: {
-        group: 'Flags:',
-        alias: 'reset',
-        demand: false,
-        desc: 'Reset the config option to its default value',
-        type: 'boolean'
-      }
+  yargs = require('yargs'),
+  Command = require('./Command'),
+  Config = require('./Config'),
+  Logger = require('./Logger'),
+  defaultCommands = {
+    'config': {
+      usage: '[flags] [key] [value]',
+      desc: 'Read, write, and reset config values',
+      options: {
+        r: {
+          group: 'Flags:',
+          alias: 'reset',
+          demand: false,
+          desc: 'Reset the config option to its default value',
+          type: 'boolean'
+        }
+      },
+      file: './ConfigCommand'
     },
-    file: './ConfigCommand'
   },
-},
-defaultGlobal = {
-  h: {
-    group: 'Global Flags:',
-    global: true,
+  defaultConfig = {
+    'cli.colors': {
+      type: 'bool',
+      default: true,
+    },
+    'cli.progressBars': {
+      type: 'bool',
+      default: true,
+    },
+    'cli.progressInterval': {
+      type: 'string',
+      default: 250,
+    },
+    'cli.timestamp': {
+      type: 'bool',
+      default: false,
+    },
+    'json.pretty': {
+      type: 'bool',
+      default: false,
+    },
+    'log.file': {
+      type: 'string',
+      default: ``,
+    },
+    'log.level': {
+      type: 'choice',
+      default: 'info',
+      choices: [
+        'info',
+        'verbose',
+        'debug',
+        'silly',
+      ],
+    },
   },
-  v: {
-    group: 'Global Flags:',
-    alias: 'verbose',
-    demand: false,
-    desc: 'Output verbosity: 1 for normal (-v), 2 for more verbose (-vv), and 3 for debug (-vvv)',
-    type: 'count',
-    global: true,
-  },
-  q: {
-    group: 'Global Flags:',
-    alias: 'quiet',
-    demand: false,
-    desc: 'Suppress all output',
-    type: 'boolean',
-    global: true,
-  },
-  V: {
-    group: 'Global Flags:',
-    global: true,
-  },
-},
-defaultConfig = {
-  'cli.colors': {
-    type: 'bool',
-    default: true,
-  },
-  'cli.progressBars': {
-    type: 'bool',
-    default: true,
-  },
-  'cli.progressInterval': {
-    type: 'string',
-    default: 250,
-  },
-  'cli.timestamp': {
-    type: 'bool',
-    default: false,
-  },
-  'json.pretty': {
-    type: 'bool',
-    default: false,
-  },
-  'log.file': {
-    type: 'string',
-    default: ``,
-  },
-  'log.level': {
-    type: 'choice',
-    default: 'info',
-    choices: [
-      'info',
-      'verbose',
-      'debug',
-      'silly',
-    ],
-  },
-};
+  defaultGlobal = {
+    h: {
+      group: 'Global Flags:',
+      global: true,
+    },
+    v: {
+      group: 'Global Flags:',
+      alias: 'verbose',
+      demand: false,
+      desc: 'Output verbosity (-v, -vv, -vvv)',
+      type: 'count',
+      global: true,
+    },
+    q: {
+      group: 'Global Flags:',
+      alias: 'quiet',
+      demand: false,
+      desc: 'Suppress all output',
+      type: 'boolean',
+      global: true,
+    },
+    V: {
+      group: 'Global Flags:',
+      global: true,
+    },
+  };
 
 class glitch {
-  constructor(commands = {}, config = {}, global = {}) {
-    this.commands = Object.assign(commands, defaultCommands);
-    this.config = Object.assign(config, defaultConfig);
-    this.global = Object.assign(global, defaultGlobal);
-
-    this.banner = '';
+  constructor(name, banner = '') {
     this.name = '';
+    this.banner = '';
+  }
+
+  init(commands = {}, config = {}, global = {}) {
+    this.commands = Object.assign(defaultCommands, commands);
+    this.config = Object.assign(defaultConfig, config);
+    this.global = Object.assign(defaultGlobal, global);
   }
 
   setBanner(banner) {
