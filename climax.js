@@ -84,7 +84,7 @@ let chalk = require('chalk'),
     },
   };
 
-class glitch {
+class climax {
   constructor(name, banner = '') {
     this.name = '';
     this.banner = '';
@@ -94,14 +94,20 @@ class glitch {
     this.commands = Object.assign(defaultCommands, commands);
     this.config = Object.assign(defaultConfig, config);
     this.global = Object.assign(defaultGlobal, global);
+
+    return this;
   }
 
   setBanner(banner) {
     this.banner = banner;
+
+    return this;
   }
 
   setName(name) {
     this.name = name;
+
+    return this;
   }
 
   async run() {
@@ -214,4 +220,4 @@ ${chalk.magenta('Usage:')}
   }
 }
 
-module.exports = glitch;
+module.exports = climax;
