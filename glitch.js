@@ -126,7 +126,7 @@ class glitch {
       yargs.command(name, command.desc, yargs => {
         return yargs.usage(`${command.desc}\n\n${chalk.magenta('Usage:')}\n  ${name} ${command.usage}`)
           .options(command.options)
-          .options(this.global.options)
+          .options(this.global)
           .demand(command.demand || 0)
           .strict()
           .fail(message => {
