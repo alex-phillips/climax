@@ -1,5 +1,5 @@
 {
-  "name": "glitch-cli",
+  "name": "node-climax",
   "version": "1.0.0",
   "description": "Super-easy command line app builder built on yargs",
   "main": "index.js",
