@@ -23,24 +23,28 @@ defaultCommands = {
 },
 defaultGlobal = {
   h: {
-    group: 'Global Flags:'
+    group: 'Global Flags:',
+    global: true,
   },
   v: {
     group: 'Global Flags:',
     alias: 'verbose',
     demand: false,
     desc: 'Output verbosity: 1 for normal (-v), 2 for more verbose (-vv), and 3 for debug (-vvv)',
-    type: 'count'
+    type: 'count',
+    global: true,
   },
   q: {
     group: 'Global Flags:',
     alias: 'quiet',
     demand: false,
     desc: 'Suppress all output',
-    type: 'boolean'
+    type: 'boolean',
+    global: true,
   },
   V: {
-    group: 'Global Flags:'
+    group: 'Global Flags:',
+    global: true,
   },
 },
 defaultConfig = {
@@ -126,7 +130,6 @@ class glitch {
       yargs.command(name, command.desc, yargs => {
         return yargs.usage(`${command.desc}\n\n${chalk.magenta('Usage:')}\n  ${name} ${command.usage}`)
           .options(command.options)
-          .options(this.global)
           .demand(command.demand || 0)
           .strict()
           .fail(message => {
