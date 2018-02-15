@@ -41,9 +41,6 @@ class Command {
           break;
       }
 
-      if (err) {
-        Logger.error(`Uncaught error: ${err}`);
-      }
       Command.shutdown(1);
     }
   }
