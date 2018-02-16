@@ -126,9 +126,9 @@ class climax {
     }
 
     let config = new Config(configFile, this.config);
-    if (yargs.argv['ansi'] !== undefined) {
+    if (process.stdout.isTTY && yargs.argv['ansi'] !== undefined) {
       chalk.enabled = yargs.argv['ansi'];
-    } else if (!config.get('cli.colors')) {
+    } else if (!config.get('cli.colors') || !process.stdout.isTTY) {
       chalk.enabled = false;
     }
 
