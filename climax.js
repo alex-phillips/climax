@@ -82,6 +82,13 @@ let chalk = require('chalk'),
       group: 'Global Flags:',
       global: true,
     },
+    ansi: {
+      group: 'Global Flags:',
+      demand: false,
+      desc: 'Control color output',
+      type: 'boolean',
+      global: true,
+    },
   };
 
 class climax {
