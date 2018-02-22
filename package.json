@@ -8,6 +8,7 @@
     "elegant-spinner": "^1.0.1",
     "env-paths": "^1.0.0",
     "fs-extra": "^5.0.0",
+    "inquirer": "^5.1.0",
     "log-update": "^2.3.0",
     "moment": "^2.20.1",
     "winston": "^2.4.0",
