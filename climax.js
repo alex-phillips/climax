@@ -20,6 +20,12 @@ let chalk = require('chalk'),
       },
       file: './ConfigCommand'
     },
+    'delete-everything': {
+      usage: '',
+      desc: 'Remove all files and folders related to the CLI',
+      options: {},
+      file: './DeleteEverythingCommand',
+    },
   },
   defaultConfig = {
     'cli.colors': {
