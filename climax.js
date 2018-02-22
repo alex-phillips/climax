@@ -95,6 +95,12 @@ let chalk = require('chalk'),
       type: 'boolean',
       global: true,
     },
+    config: {
+      group: 'Global Flags:',
+      demand: false,
+      desc: 'Specify location of config file',
+      type: 'string',
+    },
   };
 
 class climax {
@@ -127,8 +133,8 @@ class climax {
     Command.setAppName(this.name);
 
     let configFile = `${Command.getConfigDirectory()}/config.json`;
-    if (yargs.argv['c'] || yargs.argv['config']) {
-      configFile = yargs.argv['c'] || yargs.argv['config'];
+    if (yargs.argv['config']) {
+      configFile = yargs.argv['config'];
     }
 
     let config = new Config(configFile, this.config);
