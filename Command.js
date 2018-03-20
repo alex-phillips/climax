@@ -32,15 +32,7 @@ class Command {
       await this.run.apply(this, arguments);
       Command.shutdown(0);
     } catch (err) {
-      switch (err.code) {
-        case 'ENOTFOUND':
-          Logger.error(`Unable to connect. Please make sure you have network access: ${err}`);
-          break;
-        default:
-          Logger.error(`${err}`);
-          break;
-      }
-
+      Logger.error(err);
       Command.shutdown(1);
     }
   }
