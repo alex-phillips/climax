@@ -32,7 +32,7 @@ class Command {
       await this.run.apply(this, arguments);
       Command.shutdown(0);
     } catch (err) {
-      Logger.error(err);
+      Logger.error(`Uncaught error: ${err}`);
       Command.shutdown(1);
     }
   }
