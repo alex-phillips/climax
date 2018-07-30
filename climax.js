@@ -18,7 +18,7 @@ let chalk = require('chalk'),
           type: 'boolean'
         }
       },
-      file: './ConfigCommand'
+      file: './ConfigCommand',
     },
     'delete-everything': {
       usage: '',
@@ -129,33 +129,11 @@ class climax {
     return this;
   }
 
-  async run() {
-    Command.setAppName(this.name);
-
-    let configFile = `${Command.getConfigDirectory()}/config.json`;
-    if (yargs.argv['config']) {
-      configFile = yargs.argv['config'];
-    }
-
-    let config = new Config(configFile, this.config);
-    if (process.stdout.isTTY && yargs.argv['ansi'] !== undefined) {
-      chalk.enabled = yargs.argv['ansi'];
-    } else if (!config.get('cli.colors') || !process.stdout.isTTY) {
-      chalk.enabled = false;
-    }
-
-    Logger.getInstance({
-      file: config.get('log.file'),
-      logLevel: config.get('log.level'),
-      verbosity: 'warn',
-      cliTimestamp: config.get('cli.timestamp'),
-      colorize: config.get('cli.colors'),
-    });
-
-    for (let name in this.commands) {
-      let command = this.commands[name];
+  addCommands(commands, yargs) {
+    for (let name in commands) {
+      let command = commands[name];
       yargs.command(name, command.desc, yargs => {
-        return yargs.usage(`${command.desc}\n\n${chalk.magenta('Usage:')}\n  ${name} ${command.usage}`)
+        let retval = yargs.usage(`${command.desc}\n\n${chalk.magenta('Usage:')}\n  ${name} ${command.usage}`)
           .options(command.options)
           .demand(command.demand || 0)
           .strict()
@@ -164,6 +142,12 @@ class climax {
             Logger.error(message);
             Command.shutdown(1);
           });
+
+        if (command.commands) {
+          retval = this.addCommands(command.commands, retval);
+        }
+
+        return retval;
       }, argv => {
         let cliVerbosity = 'info';
         switch (parseInt(argv.verbose)) {
@@ -201,6 +185,32 @@ class climax {
         }
       });
     }
+  }
+
+  async run() {
+    Command.setAppName(this.name);
+
+    let configFile = `${Command.getConfigDirectory()}/config.json`;
+    if (yargs.argv['config']) {
+      configFile = yargs.argv['config'];
+    }
+
+    let config = new Config(configFile, this.config);
+    if (process.stdout.isTTY && yargs.argv['ansi'] !== undefined) {
+      chalk.enabled = yargs.argv['ansi'];
+    } else if (!config.get('cli.colors') || !process.stdout.isTTY) {
+      chalk.enabled = false;
+    }
+
+    Logger.getInstance({
+      file: config.get('log.file'),
+      logLevel: config.get('log.level'),
+      verbosity: 'warn',
+      cliTimestamp: config.get('cli.timestamp'),
+      colorize: config.get('cli.colors'),
+    });
+
+    this.addCommands(this.commands, yargs);
 
     let argv = yargs
       .usage(`${chalk.cyan(this.banner)}
