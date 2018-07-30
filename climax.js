@@ -129,7 +129,7 @@ class climax {
     return this;
   }
 
-  addCommands(commands, yargs) {
+  addCommands(commands, config, yargs) {
     for (let name in commands) {
       let command = commands[name];
       yargs.command(name, command.desc, yargs => {
@@ -144,7 +144,7 @@ class climax {
           });
 
         if (command.commands) {
-          retval = this.addCommands(command.commands, retval);
+          retval = this.addCommands(command.commands, config, retval);
         }
 
         return retval;
@@ -180,8 +180,8 @@ class climax {
             Command.shutdown(code);
           });
         } else {
-          Logger.error(`Command '${name}' does not have a valid config action`);
-          Command.shutdown(1);
+          yargs.showHelp();
+          Command.shutdown(0);
         }
       });
     }
@@ -210,7 +210,7 @@ class climax {
       colorize: config.get('cli.colors'),
     });
 
-    this.addCommands(this.commands, yargs);
+    this.addCommands(this.commands, config, yargs);
 
     let argv = yargs
       .usage(`${chalk.cyan(this.banner)}
