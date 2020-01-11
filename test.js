@@ -1,69 +1,58 @@
-let App = require('./index.js').App;
+const { App } = require('./index.js');
+const Command = require('./Command');
+const Logger = require('./Logger');
+const pkgJson = require('./package.json');
 
-let app = new App('test')
+const app = new App('test')
   .init(
-  {
-    // 'contest-bot': {
-    //   usage: '',
-    //   desc: 'Run twitter contest bot',
-    //   options: {},
-    //   file: '../lib/Commands/TwitterContestBotCommand'
-    // },
-    // 'monitor:speed': {
-    //   usage: '',
-    //   desc: 'Monitor internet speed',
-    //   options: {},
-    //   file: '../lib/Commands/InternetSpeedCommand'
-    // },
-    // 'monitor:vpn': {
-    //   usage: '',
-    //   desc: 'Check if VPN is connected',
-    //   options: {},
-    //   file: '../lib/Commands/MonitorVPNCommand'
-    // },
-    // 'screenshot': {
-    //   usage: '',
-    //   desc: 'Save screenshots of sites',
-    //   options: {},
-    //   file: '../lib/Commands/ScreenshotCommand'
-    // },
-    'version': {
-      offline: true,
-      usage: '',
-      desc: false,
-      options: {},
-      callback: callback => {
-        Logger.info(`v${pkgJson.version}`);
-        callback(0);
-      }
-    }
-  },
-  {
-    options: {
-      h: {
-        group: 'Global Flags:'
+    {
+      'spinner': {
+        usage: '',
+        desc: false,
+        options: {},
+        func: async () => {
+          Command.startSpinner();
+          await new Promise(r => {
+            setTimeout(r, 10000);
+          });
+
+          Command.stopSpinner();
+        },
       },
-      v: {
-        group: 'Global Flags:',
-        alias: 'verbose',
-        demand: false,
-        desc: 'Output verbosity: 1 for normal (-v), 2 for more verbose (-vv), and 3 for debug (-vvv)',
-        type: 'count'
+      'version': {
+        usage: '',
+        desc: false,
+        options: {},
+        func: async (cmd, args) => {
+          Logger.info(`v${pkgJson.version}`);
+        },
       },
-      q: {
-        group: 'Global Flags:',
-        alias: 'quiet',
-        demand: false,
-        desc: 'Suppress all output',
-        type: 'boolean'
+    },
+    {
+      options: {
+        h: {
+          group: 'Global Flags:',
+        },
+        v: {
+          group: 'Global Flags:',
+          alias: 'verbose',
+          demand: false,
+          desc: 'Output verbosity: 1 for normal (-v), 2 for more verbose (-vv), and 3 for debug (-vvv)',
+          type: 'count',
+        },
+        q: {
+          group: 'Global Flags:',
+          alias: 'quiet',
+          demand: false,
+          desc: 'Suppress all output',
+          type: 'boolean',
+        },
+        V: {
+          group: 'Global Flags:',
+        },
       },
-      V: {
-        group: 'Global Flags:'
-      }
-    }
-  },
-  {}
-);
+    },
+  );
 
 app.setName('test');
 

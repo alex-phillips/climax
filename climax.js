@@ -1,107 +1,106 @@
-'use strict';
+const chalk = require('chalk');
+const yargs = require('yargs');
+const Command = require('./Command');
+const Config = require('./Config');
+const Logger = require('./Logger');
 
-let chalk = require('chalk'),
-  yargs = require('yargs'),
-  Command = require('./Command'),
-  Config = require('./Config'),
-  Logger = require('./Logger'),
-  defaultCommands = {
-    'config': {
-      usage: '[flags] [key] [value]',
-      desc: 'Read, write, and reset config values',
-      options: {
-        r: {
-          group: 'Flags:',
-          alias: 'reset',
-          demand: false,
-          desc: 'Reset the config option to its default value',
-          type: 'boolean'
-        }
+const defaultCommands = {
+  'config': {
+    usage: '[flags] [key] [value]',
+    desc: 'Read, write, and reset config values',
+    options: {
+      r: {
+        group: 'Flags:',
+        alias: 'reset',
+        demand: false,
+        desc: 'Reset the config option to its default value',
+        type: 'boolean',
       },
-      file: './ConfigCommand',
     },
-    'delete-everything': {
-      usage: '',
-      desc: 'Remove all files and folders related to the CLI',
-      options: {},
-      file: './DeleteEverythingCommand',
-    },
+    file: './ConfigCommand',
   },
-  defaultConfig = {
-    'cli.colors': {
-      type: 'bool',
-      default: true,
-    },
-    'cli.progressBars': {
-      type: 'bool',
-      default: true,
-    },
-    'cli.progressInterval': {
-      type: 'string',
-      default: 250,
-    },
-    'cli.timestamp': {
-      type: 'bool',
-      default: false,
-    },
-    'json.pretty': {
-      type: 'bool',
-      default: false,
-    },
-    'log.file': {
-      type: 'string',
-      default: ``,
-    },
-    'log.level': {
-      type: 'choice',
-      default: 'info',
-      choices: [
-        'info',
-        'verbose',
-        'debug',
-        'silly',
-      ],
-    },
+  'delete-everything': {
+    usage: '',
+    desc: 'Remove all files and folders related to the CLI',
+    options: {},
+    file: './DeleteEverythingCommand',
   },
-  defaultGlobal = {
-    h: {
-      group: 'Global Flags:',
-      global: true,
-    },
-    v: {
-      group: 'Global Flags:',
-      alias: 'verbose',
-      demand: false,
-      desc: 'Output verbosity (-v, -vv, -vvv)',
-      type: 'count',
-      global: true,
-    },
-    q: {
-      group: 'Global Flags:',
-      alias: 'quiet',
-      demand: false,
-      desc: 'Suppress all output',
-      type: 'boolean',
-      global: true,
-    },
-    V: {
-      group: 'Global Flags:',
-      global: true,
-    },
-    ansi: {
-      group: 'Global Flags:',
-      demand: false,
-      desc: 'Control color output',
-      type: 'boolean',
-      global: true,
-    },
-    config: {
-      group: 'Global Flags:',
-      demand: false,
-      desc: 'Specify location of config file',
-      type: 'string',
-    },
-  };
+};
+const defaultConfig = {
+  'cli.colors': {
+    type: 'bool',
+    default: true,
+  },
+  'cli.progressBars': {
+    type: 'bool',
+    default: true,
+  },
+  'cli.progressInterval': {
+    type: 'string',
+    default: 250,
+  },
+  'cli.timestamp': {
+    type: 'bool',
+    default: false,
+  },
+  'json.pretty': {
+    type: 'bool',
+    default: false,
+  },
+  'log.file': {
+    type: 'string',
+    default: '',
+  },
+  'log.level': {
+    type: 'choice',
+    default: 'info',
+    choices: [
+      'info',
+      'verbose',
+      'debug',
+      'silly',
+    ],
+  },
+};
+const defaultGlobal = {
+  h: {
+    group: 'Global Flags:',
+    global: true,
+  },
+  v: {
+    group: 'Global Flags:',
+    alias: 'verbose',
+    demand: false,
+    desc: 'Output verbosity (-v, -vv, -vvv)',
+    type: 'count',
+    global: true,
+  },
+  q: {
+    group: 'Global Flags:',
+    alias: 'quiet',
+    demand: false,
+    desc: 'Suppress all output',
+    type: 'boolean',
+    global: true,
+  },
+  V: {
+    group: 'Global Flags:',
+    global: true,
+  },
+  ansi: {
+    group: 'Global Flags:',
+    demand: false,
+    desc: 'Control color output',
+    type: 'boolean',
+    global: true,
+  },
+  config: {
+    group: 'Global Flags:',
+    demand: false,
+    desc: 'Specify location of config file',
+    type: 'string',
+  },
+};
 
 class climax {
   constructor(name, banner = '') {
@@ -130,8 +129,8 @@ class climax {
   }
 
   addCommands(commands, config, yargs) {
-    for (let name in commands) {
-      let command = commands[name];
+    Object.keys(commands).map(name => {
+      const command = commands[name];
       yargs.command(name, command.desc, yargs => {
         let retval = yargs.usage(`${command.desc}\n\n${chalk.magenta('Usage:')}\n  ${name} ${command.usage}`)
           .options(command.options)
@@ -148,9 +147,9 @@ class climax {
         }
 
         return retval;
-      }, argv => {
+      }, async argv => {
         let cliVerbosity = 'info';
-        switch (parseInt(argv.verbose)) {
+        switch (parseInt(argv.verbose, 10)) {
           case 1:
             cliVerbosity = 'verbose';
             break;
@@ -172,32 +171,30 @@ class climax {
 
         // Load in the command file and run
         if (command.file) {
-          let Cmd = require(command.file);
-          new Cmd(config).execute(argv._.slice(1), argv);
-        } else if (command.callback) {
+          const Cmd = require(command.file);
+          await new Cmd(config).execute(argv._.slice(1), argv);
+        } else if (command.func) {
           // Otherwise,
-          command.callback(code => {
-            Command.shutdown(code);
-          });
+          Command.shutdown(await command.func(argv._.slice(1), argv));
         } else {
           yargs.showHelp();
           Command.shutdown(0);
         }
       });
-    }
+    });
   }
 
   async run() {
     Command.setAppName(this.name);
 
     let configFile = `${Command.getConfigDirectory()}/config.json`;
-    if (yargs.argv['config']) {
-      configFile = yargs.argv['config'];
+    if (yargs.argv.config) {
+      configFile = yargs.argv.config;
     }
 
-    let config = new Config(configFile, this.config);
-    if (process.stdout.isTTY && yargs.argv['ansi'] !== undefined) {
-      chalk.enabled = yargs.argv['ansi'];
+    const config = new Config(configFile, this.config);
+    if (process.stdout.isTTY && yargs.argv.ansi !== undefined) {
+      chalk.enabled = yargs.argv.ansi;
     } else if (!config.get('cli.colors') || !process.stdout.isTTY) {
       chalk.enabled = false;
     }
@@ -212,7 +209,7 @@ class climax {
 
     this.addCommands(this.commands, config, yargs);
 
-    let argv = yargs
+    const { argv } = yargs
       .usage(`${chalk.cyan(this.banner)}
 ${chalk.cyan(this.name)} version ${chalk.magenta()}
 
@@ -235,16 +232,13 @@ ${chalk.magenta('Usage:')}
         Logger.error(message);
         Command.shutdown(1);
       })
-      .recommendCommands()
-      .argv;
+      .recommendCommands();
 
     if (!argv._[0]) {
       yargs.showHelp();
-    } else {
-      if (!this.commands[argv._[0]]) {
-        yargs.showHelp();
-        Command.shutdown(1);
-      }
+    } else if (!this.commands[argv._[0]]) {
+      yargs.showHelp();
+      Command.shutdown(1);
     }
   }
 }

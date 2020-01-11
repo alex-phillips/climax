@@ -1,20 +1,17 @@
-'use strict';
-
-let Command = require('./Command'),
-  Logger = require('./Logger'),
-  async = require('async'),
-  fs = require('fs-extra'),
-  inquirer = require('inquirer');
+const fs = require('fs');
+const inquirer = require('inquirer');
+const Logger = require('./Logger');
+const Command = require('./Command');
 
 class DeleteEverythingCommand extends Command {
   async run(args, options) {
-    let answers = await inquirer.prompt([
+    const answers = await inquirer.prompt([
       {
         type: 'confirm',
         name: 'confirm',
         message: 'really delete everything? ',
         default: false,
-      }
+      },
     ]);
 
     if (!answers.confirm) {
@@ -22,13 +19,13 @@ class DeleteEverythingCommand extends Command {
     }
 
     Logger.verbose(`Removing cache directory ${Command.getCacheDirectory()}`);
-    fs.removeSync(Command.getCacheDirectory());
+    fs.rmdirSync(Command.getCacheDirectory(), { recursive: true });
 
     Logger.verbose(`Removing config directory ${Command.getConfigDirectory()}`);
-    fs.removeSync(Command.getConfigDirectory());
+    fs.rmdirSync(Command.getConfigDirectory(), { recursive: true });
 
     Logger.verbose(`Removing log directory ${Command.getLogDirectory()}`);
-    fs.removeSync(Command.getLogDirectory());
+    fs.rmdirSync(Command.getLogDirectory(), { recursive: true });
   }
 }
 

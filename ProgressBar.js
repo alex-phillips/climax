@@ -1,6 +1,4 @@
-'use strict';
-
-let logUpdate = require('log-update');
+const logUpdate = require('log-update');
 
 /**
  * Initialize a `ProgressBar` with the given `format` string and `options` or
@@ -32,8 +30,8 @@ let logUpdate = require('log-update');
  */
 class ProgressBar {
   constructor(format, options = {}) {
-    let config = {
-      format: format,
+    const config = {
+      format,
       total: options.total,
       width: options.width || options.total,
       chars: {
@@ -52,7 +50,7 @@ class ProgressBar {
     };
 
     this.options = {};
-    for (let option in config) {
+    for (const option in config) {
       this.options[option] = config[option];
     }
   }
@@ -111,21 +109,21 @@ class ProgressBar {
     let ratio = this.options.current / this.options.total;
     ratio = Math.min(Math.max(ratio, 0), 1);
 
-    let percent = ratio * 100,
-      incomplete, complete, completeLength,
-      elapsed = new Date() - this.options.start,
-      eta = percent === 100 ? 0 : elapsed * (this.options.total / this.options.current - 1);
+    const percent = ratio * 100;
+    let incomplete; let complete; let completeLength;
+    const elapsed = new Date() - this.options.start;
+    const eta = percent === 100 ? 0 : elapsed * (this.options.total / this.options.current - 1);
 
     let str = this.options.format
       .replace(':current', this.options.current)
       .replace(':total', this.options.total)
       .replace(':elapsed', isNaN(elapsed) ? '0.0' : (elapsed / 1000).toFixed(1))
       .replace(':eta', (isNaN(eta) || !isFinite(eta)) ? '0.0' : (eta / 1000).toFixed(1))
-      .replace(':percent', percent.toFixed(0) + '%');
+      .replace(':percent', `${percent.toFixed(0)}%`);
 
     /* compute the available space (non-zero) for the bar */
-    let availableSpace = Math.max(0, this.options.stream.columns - str.replace(':bar', '').length),
-      width = Math.min(this.options.width, availableSpace);
+    const availableSpace = Math.max(0, this.options.stream.columns - str.replace(':bar', '').length);
+    const width = Math.min(this.options.width, availableSpace);
 
     /* TODO: the following assumes the user has one ':bar' token */
     completeLength = Math.round(width * ratio);
@@ -136,7 +134,11 @@ class ProgressBar {
     str = str.replace(':bar', complete + incomplete);
 
     /* replace the extra tokens */
-    if (this.options.tokens) for (var key in this.options.tokens) str = str.replace(':' + key, this.options.tokens[key]);
+    if (this.options.tokens) {
+      for (const key in this.options.tokens) {
+        str = str.replace(`:${key}`, this.options.tokens[key]);
+      }
+    }
 
     if (this.options.lastDraw !== str) {
       if (this.options.output) {
@@ -160,8 +162,8 @@ class ProgressBar {
    * @api public
    */
   update(ratio, tokens) {
-    let goal = Math.floor(ratio * this.options.total),
-      delta = goal - this.options.current;
+    const goal = Math.floor(ratio * this.options.total);
+    const delta = goal - this.options.current;
 
     this.tick(delta, tokens);
   }

@@ -4,17 +4,20 @@
   "description": "Super-easy command line app builder built on yargs",
   "main": "index.js",
   "dependencies": {
-    "chalk": "^2.3.0",
-    "elegant-spinner": "^1.0.1",
-    "env-paths": "^1.0.0",
-    "fs-extra": "^5.0.0",
-    "inquirer": "^5.1.0",
-    "log-update": "^2.3.0",
-    "moment": "^2.20.1",
-    "winston": "^2.4.0",
-    "yargs": "^10.1.1"
+    "chalk": "^3.0.0",
+    "elegant-spinner": "^2.0.0",
+    "env-paths": "^2.2.0",
+    "inquirer": "^7.0.3",
+    "log-update": "^3.3.0",
+    "moment": "^2.24.0",
+    "winston": "^3.2.1",
+    "yargs": "^15.1.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

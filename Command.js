@@ -1,17 +1,14 @@
-'use strict';
+const fs = require('fs');
+const chalk = require('chalk');
+const elegantSpinner = require('elegant-spinner');
+const envPaths = require('env-paths');
+const logUpdate = require('log-update');
+const os = require('os');
+const Logger = require('./Logger');
 
-let path = require('path'),
-  fs = require('fs-extra'),
-  Logger = require('./Logger'),
-  chalk = require('chalk'),
-  moment = require('moment'),
-  elegantSpinner = require('elegant-spinner'),
-  envPaths = require('env-paths'),
-  logUpdate = require('log-update'),
-  os = require('os'),
-  paths = null,
-  spinner = null,
-  spinnerText = '';
+let paths = null;
+let spinner = null;
+let spinnerText = '';
 
 class Command {
   constructor(config = {}) {
@@ -20,16 +17,16 @@ class Command {
     }
 
     if (config.constructor.name !== 'Config') {
-      throw Error(`Second parameter must be an instance of 'Config'.`);
+      throw Error('Second parameter must be an instance of \'Config\'.');
     }
 
     this.config = config;
   }
 
-  async execute(args, options) {
+  async execute() {
     try {
       Logger.debug(`Running ${this.constructor.name}`);
-      await this.run.apply(this, arguments);
+      await this.run(...arguments);
       Command.shutdown(0);
     } catch (err) {
       Logger.error(`Uncaught error: ${err}`);
@@ -37,9 +34,7 @@ class Command {
     }
   }
 
-  async run(cmd, options) {
-
-  }
+  async run(cmd, options) { }
 
   static getAppName() {
     return Command.APP_NAME;
@@ -53,7 +48,7 @@ class Command {
     try {
       fs.statSync(paths.cache);
     } catch (e) {
-      fs.mkdirsSync(paths.cache);
+      fs.mkdirSync(paths.cache, { recursive: true });
     }
 
     return paths.cache;
@@ -67,7 +62,7 @@ class Command {
     try {
       fs.statSync(paths.config);
     } catch (e) {
-      fs.mkdirsSync(paths.config);
+      fs.mkdirSync(paths.config, { recursive: true });
     }
 
     return paths.config;
@@ -85,7 +80,7 @@ class Command {
     try {
       fs.statSync(paths.log);
     } catch (e) {
-      fs.mkdirsSync(paths.log);
+      fs.mkdirSync(paths.log, { recursive: true });
     }
 
     return paths.log;
@@ -99,7 +94,7 @@ class Command {
     try {
       fs.statSync(paths.temp);
     } catch (e) {
-      fs.mkdirsSync(paths.temp);
+      fs.mkdirSync(paths.temp, { recursive: true });
     }
 
     return paths.temp;
@@ -127,7 +122,7 @@ class Command {
 
     spinnerText = message || '';
 
-    let frame = elegantSpinner();
+    const frame = elegantSpinner();
     logUpdate.done();
     spinner = setInterval(() => {
       process.stdout.clearLine();

@@ -1,39 +1,58 @@
-'use strict';
+const winston = require('winston');
+const { format } = require('winston');
 
-let chalk = require('chalk'),
-  winston = require('winston'),
-  moment = require('moment'),
-  logUpdate = require('log-update'),
-  instance = null,
-  levels = {
-    error: 0,
-    warn: 1,
-    info: 2,
-    verbose: 3,
-    debug: 4,
-    silly: 5,
-  };
+const { timestamp, printf } = format;
+const moment = require('moment');
+const logUpdate = require('log-update');
+
+const levels = {
+  error: 0,
+  warn: 1,
+  info: 2,
+  verbose: 3,
+  debug: 4,
+  silly: 5,
+};
+
+let instance = null;
+let consoleTransport = null;
+let fileTransport = null;
 
 class Logger {
-  static getInstance(config = {verbosity: 'error'}) {
+  static getInstance(config = { verbosity: 'error' }) {
     if (instance === null) {
       if (config.cliTimestamp === true) {
         config.cliTimestamp = Logger.timestamp;
       }
-      let showLevels = levels[config.verbosity] <= levels.info ? false : true,
-        transports = [
-          new (winston.transports.Console)({
-            level: config.verbosity,
-            colorize: config.colorize,
-            align: showLevels,
-            handleExceptions: true,
-            timestamp: config.cliTimestamp,
-            showLevel: showLevels,
+      consoleTransport = new (winston.transports.Console)({
+        level: config.verbosity,
+        format: winston.format.combine(
+          winston.format.colorize({ level: true }),
+          winston.format.simple(),
+          timestamp(),
+          printf(({ level, message, timestamp }) => {
+            let line = message;
+
+            if (levels[consoleTransport.level] > 2) {
+              line = `${level}: ${line}`;
+            }
+
+            if (config.cliTimestamp) {
+              line = `${timestamp} ${line}`;
+            }
+
+            // return `${timestamp} ${level}: ${message}`;
+            return line;
           }),
-        ];
+        ),
+      });
+
+      const transports = [
+        consoleTransport,
+      ];
 
       if (config.file) {
-        transports.push(new (winston.transports.File)({
+        fileTransport = new (winston.transports.File)({
           filename: config.file,
           level: config.logLevel,
           align: true,
@@ -41,11 +60,12 @@ class Logger {
           json: false,
           handleExceptions: true,
           colorize: false,
-        }));
+        });
+        transports.push(fileTransport);
       }
 
-      instance = new (winston.Logger)({
-        transports: transports,
+      instance = winston.createLogger({
+        transports,
       });
     }
 
@@ -68,7 +88,7 @@ class Logger {
   }
 
   static getOutputLevel() {
-    return Logger.getInstance().transports.console.level;
+    return consoleTransport.level;
   }
 
   static info(message, data = null, callback = null) {
@@ -108,11 +128,8 @@ class Logger {
   }
 
   static setConsoleLevel(level) {
-    if (Logger.getInstance().transports.console) {
-      let showLevel = levels[level] <= levels.info ? false : true;
-      Logger.getInstance().transports.console.level = level;
-      Logger.getInstance().transports.console.showLevel = showLevel;
-      Logger.getInstance().transports.console.align = showLevel;
+    if (consoleTransport) {
+      consoleTransport.level = level;
     }
   }
 

@@ -1,9 +1,7 @@
-'use strict';
+const fs = require('fs');
+const ParameterBag = require('./ParameterBag');
 
-let ParameterBag = require('./ParameterBag'),
-  fs = require('fs'),
-  path = require('path'),
-  defaultConfig = {};
+let defaultConfig = {};
 
 class Config extends ParameterBag {
   constructor(filePath, baseConfig = {}) {
@@ -17,15 +15,15 @@ class Config extends ParameterBag {
 
     config = new ParameterBag(config);
 
-    for (let key in defaultConfig) {
-      let val = defaultConfig[key].default,
-        savedValue = config.get(key);
+    Object.keys(defaultConfig).map(key => {
+      let val = defaultConfig[key].default;
+      const savedValue = config.get(key);
       if (savedValue !== null) {
         val = savedValue;
       }
 
       config[key] = val;
-    }
+    });
 
     super(config);
     this.filePath = filePath;
@@ -67,7 +65,7 @@ class Config extends ParameterBag {
         break;
     }
 
-    return super.set(key, value);
+    super.set(key, value);
   }
 }
 
