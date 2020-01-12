@@ -11,7 +11,7 @@ class Config extends ParameterBag {
     let config = {};
     try {
       fs.statSync(filePath);
-      config = ini.parse(fs.readFileSync(filePath), 'utf-8');
+      config = ini.parse(fs.readFileSync(filePath, 'utf-8'));
     } catch (e) { }
 
     config = new ParameterBag(config);
