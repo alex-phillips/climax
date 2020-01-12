@@ -131,7 +131,7 @@ class climax {
   addCommands(commands, config, yargs) {
     Object.keys(commands).map(name => {
       const command = commands[name];
-      yargs.command(name, command.desc, yargs => {
+      yargs.command(name, command.desc || command.description || false, yargs => {
         let retval = yargs.usage(`${command.desc}\n\n${chalk.magenta('Usage:')}\n  ${name} ${command.usage}`)
           .options(command.options)
           .demand(command.demand || 0)
@@ -187,7 +187,7 @@ class climax {
   async run() {
     Command.setAppName(this.name);
 
-    let configFile = `${Command.getConfigDirectory()}/config.json`;
+    let configFile = `${Command.getConfigDirectory()}/${Command.APP_NAME}.json`;
     if (yargs.argv.config) {
       configFile = yargs.argv.config;
     }
