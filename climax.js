@@ -187,7 +187,7 @@ class climax {
   async run() {
     Command.setAppName(this.name);
 
-    let configFile = `${Command.getConfigDirectory()}/${Command.APP_NAME}.json`;
+    let configFile = `${Command.getConfigDirectory()}/${Command.APP_NAME}.ini`;
     if (yargs.argv.config) {
       configFile = yargs.argv.config;
     }

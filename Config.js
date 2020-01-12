@@ -1,4 +1,5 @@
 const fs = require('fs');
+const ini = require('ini');
 const ParameterBag = require('./ParameterBag');
 
 let defaultConfig = {};
@@ -10,8 +11,8 @@ class Config extends ParameterBag {
     let config = {};
     try {
       fs.statSync(filePath);
-      config = JSON.parse(fs.readFileSync(filePath));
-    } catch (e) {}
+      config = ini.parse(fs.readFileSync(filePath), 'utf-8');
+    } catch (e) { }
 
     config = new ParameterBag(config);
 
@@ -36,7 +37,7 @@ class Config extends ParameterBag {
   }
 
   save() {
-    fs.writeFileSync(this.filePath, JSON.stringify(this.getData()));
+    fs.writeFileSync(this.filePath, ini.stringify(this.getData()));
   }
 
   set(key, value) {
