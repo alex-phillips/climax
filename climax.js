@@ -128,14 +128,13 @@ class climax {
     return this;
   }
 
-  addCommands(commands, config, yargs) {
+  addCommands(commands, yargs) {
     Object.keys(commands).map(name => {
       const command = commands[name];
       yargs.command(name, command.desc || command.description || false, yargs => {
         let retval = yargs.usage(`${command.desc}\n\n${chalk.magenta('Usage:')}\n  ${name} ${command.usage}`)
           .options(command.options)
           .demand(command.demand || 0)
-          .strict()
           .fail(message => {
             yargs.showHelp();
             Logger.error(message);
@@ -143,7 +142,7 @@ class climax {
           });
 
         if (command.commands) {
-          retval = this.addCommands(command.commands, config, retval);
+          retval = this.addCommands(command.commands, retval);
         }
 
         return retval;
@@ -167,7 +166,25 @@ class climax {
           cliVerbosity = 'error';
         }
 
-        Logger.setConsoleLevel(cliVerbosity);
+        let configFile = `${Command.getConfigDirectory()}/${Command.APP_NAME}.ini`;
+        if (yargs.argv.config) {
+          configFile = yargs.argv.config;
+        }
+
+        const config = new Config(configFile, this.config);
+        if (process.stdout.isTTY && yargs.argv.ansi !== undefined) {
+          chalk.enabled = yargs.argv.ansi;
+        } else if (!config.get('cli.colors') || !process.stdout.isTTY) {
+          chalk.enabled = false;
+        }
+
+        Logger.getInstance({
+          file: config.get('log.file'),
+          logLevel: config.get('log.level'),
+          verbosity: cliVerbosity,
+          cliTimestamp: config.get('cli.timestamp'),
+          colorize: config.get('cli.colors'),
+        });
 
         // Load in the command file and run
         if (command.file) {
@@ -187,27 +204,7 @@ class climax {
   async run() {
     Command.setAppName(this.name);
 
-    let configFile = `${Command.getConfigDirectory()}/${Command.APP_NAME}.ini`;
-    if (yargs.argv.config) {
-      configFile = yargs.argv.config;
-    }
-
-    const config = new Config(configFile, this.config);
-    if (process.stdout.isTTY && yargs.argv.ansi !== undefined) {
-      chalk.enabled = yargs.argv.ansi;
-    } else if (!config.get('cli.colors') || !process.stdout.isTTY) {
-      chalk.enabled = false;
-    }
-
-    Logger.getInstance({
-      file: config.get('log.file'),
-      logLevel: config.get('log.level'),
-      verbosity: 'warn',
-      cliTimestamp: config.get('cli.timestamp'),
-      colorize: config.get('cli.colors'),
-    });
-
-    this.addCommands(this.commands, config, yargs);
+    this.addCommands(this.commands, yargs);
 
     const { argv } = yargs
       .usage(`${chalk.cyan(this.banner)}
@@ -226,7 +223,6 @@ ${chalk.magenta('Usage:')}
       })
       .options(this.global)
       // .epilog(`Copyright ${new Date().getFullYear()}`)
-      .strict()
       .fail((message) => {
         yargs.showHelp();
         Logger.error(message);
